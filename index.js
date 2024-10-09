@@ -25,15 +25,23 @@ const main = async () => {
     );
     // el primero encontrado $
     const scoreElement = await page.$(".score");
-
     const scoreText = await page.evaluate((el) => el.textContent, scoreElement);
+
+    //comments
+    const commentsElement = await page.$$(`a[href="item?id=${id}"]`);
+    const secondCommentsElement = commentsElement[1];
+
+    const CommentText = await page.evaluate(
+      (el) => el.textContent,
+      secondCommentsElement
+    );
 
     Array.push({
       id: id,
       number: numbers,
       title: titles,
       points: scoreText,
-      numberComments: [],
+      numberComments: CommentText,
     });
 
     console.log(Array);
