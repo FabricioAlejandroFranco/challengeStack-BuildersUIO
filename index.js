@@ -1,53 +1,69 @@
 import puppeteer from "puppeteer";
+import express from "express";
 
-const main = async () => {
-  const browser = await puppeteer.launch({
-    headless: true,
-  });
-  const page = await browser.newPage();
+const app = express();
+const port = 3000;
 
-  await page.goto("https://news.ycombinator.com/");
+app.get("/api", async (req, res) => {
+  try {
+    const main = async () => {
+      const browser = await puppeteer.launch({
+        headless: true,
+      });
+      const page = await browser.newPage();
 
-  const data = await page.$$(".athing");
-  const Array = [];
+      await page.goto("https://news.ycombinator.com/");
 
-  for (const article of data) {
-    const id = await page.evaluate((el) => el.getAttribute("id"), article);
+      const data = await page.$$(".athing");
+      const limitData = data.slice(0, 30);
+      const Array = [];
 
-    const titles = await page.evaluate(
-      (el) => el.querySelector("td > span > a").textContent,
-      article
-    );
+      for (const article of limitData) {
+        const id = await page.evaluate((el) => el.getAttribute("id"), article);
 
-    const numbers = await page.evaluate(
-      (el) => el.querySelector(".athing > .title > .rank").innerText,
-      article
-    );
-    // el primero encontrado $
-    const scoreElement = await page.$(".score");
-    const scoreText = await page.evaluate((el) => el.textContent, scoreElement);
+        const titles = await page.evaluate(
+          (el) => el.querySelector("td > span > a").textContent,
+          article
+        );
 
-    //comments
-    const commentsElement = await page.$$(`a[href="item?id=${id}"]`);
-    const secondCommentsElement = commentsElement[1];
+        const numbers = await page.evaluate(
+          (el) => el.querySelector(".athing > .title > .rank").innerText,
+          article
+        );
+        // el primero encontrado $
+        const scoreElement = await page.$(".score");
+        const scoreText = await page.evaluate(
+          (el) => el.textContent,
+          scoreElement
+        );
 
-    const CommentText = await page.evaluate(
-      (el) => el.textContent,
-      secondCommentsElement
-    );
+        //comments
+        const commentsElement = await page.$$(`a[href="item?id=${id}"]`);
+        const secondCommentsElement = commentsElement[1];
 
-    Array.push({
-      id: id,
-      number: numbers,
-      title: titles,
-      points: scoreText,
-      numberComments: CommentText,
-    });
+        const CommentText = secondCommentsElement
+          ? await page.evaluate((el) => el.textContent, secondCommentsElement)
+          : "No comments";
 
-    console.log(Array);
+        Array.push({
+          id: id,
+          number: numbers,
+          title: titles,
+          points: scoreText,
+          numberComments: CommentText,
+        });
+      }
+      console.log(Array);
+
+      browser.close();
+    };
+    await main();
+    res.json(Array);
+  } catch (error) {
+    res.status(500).send({ error: "Hubo un error interno en el servidor" });
   }
+});
 
-  await browser.close();
-};
-
-main();
+app.listen(port, () => {
+  console.log(`Servidor activo en http://localhost:${port}/api`);
+});
