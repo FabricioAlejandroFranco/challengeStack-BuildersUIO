@@ -1,14 +1,17 @@
 import puppeteer from "puppeteer";
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 3000;
 
+app.use(cors());
+
 app.get("/api", async (req, res) => {
   try {
-    const main = async () => {
+    const main = async (arreglo) => {
       const browser = await puppeteer.launch({
-        headless: true,
+        headless: true
       });
       const page = await browser.newPage();
 
@@ -50,15 +53,22 @@ app.get("/api", async (req, res) => {
           number: numbers,
           title: titles,
           points: scoreText,
-          numberComments: CommentText,
+          numberComments: CommentText
         });
       }
-      console.log(Array);
+      if (Array) {
+        console.log("recibido!");
+      }
 
-      browser.close();
+      await browser.close();
+      //devuelvo arreglo con datos
+      return Array;
     };
-    await main();
-    res.json(Array);
+    // convierto el arreglo en json
+    const article = await main();
+    res.json(article);
+
+    console.log("esto es articles", article);
   } catch (error) {
     res.status(500).send({ error: "Hubo un error interno en el servidor" });
   }
