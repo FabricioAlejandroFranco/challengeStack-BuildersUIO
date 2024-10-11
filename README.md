@@ -31,11 +31,11 @@ This is the backend of the ChallengeStack Builders project, built using **Node.j
 
 3. Start the server:
 
-   npm start
+   node index.js
 
 ## Usage
 
-The backend runs a server on `http://localhost:3000` and provides a single API route that scrapes and returns articles from [Hacker News](https://news.ycombinator.com/).
+The backend runs a server on `http://localhost:3000/` and provides a single API route that scrapes and returns articles from [Hacker News](https://news.ycombinator.com/).
 
 ## API Endpoints
 
