@@ -11,7 +11,12 @@
   "license": "ISC",
   "description": "a Stack Builder Challenge",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "puppeteer": "^23.5.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0"
   }
 }
