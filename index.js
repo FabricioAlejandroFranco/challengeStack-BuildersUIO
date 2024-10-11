@@ -34,7 +34,7 @@ app.get("/api", async (req, res) => {
           article
         );
         // el primero encontrado $
-        const scoreElement = await page.$(".score");
+        const scoreElement = await page.$(`#score_${id}`);
         const scoreText = await page.evaluate(
           (el) => el.textContent,
           scoreElement
